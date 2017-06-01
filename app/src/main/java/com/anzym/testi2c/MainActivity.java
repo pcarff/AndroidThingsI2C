@@ -21,10 +21,11 @@ public class MainActivity extends AppCompatActivity {
 
     private int delay_time = 300;
 
+    // <TODO> Update these to strings and the use getBytes
     //ASCII for i = 105
-    private static final char[] PH_INFO = {105,13};
+    private static final char[] PH_INFO = {105};
     //ASCII for r = 114
-    private static final char[] PH_READ = {114,13};
+    private static final char[] PH_READ = {114};
 
 
     private I2cDevice pHProbe;
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // convert char[] to byte[]
+        //<TODO> remove the new String after I make these Strings above.
         cmdBytes =  new String(cmd).getBytes();
         try {
             pHProbe.write(cmdBytes, cmdBytes.length);
