@@ -81,9 +81,14 @@ public class EzoCircuitDriver implements AutoCloseable {
                 .setDriver(new UserSensorDriver() {
                     @Override
                     public UserSensorReading read() throws IOException {
+                        //TODO - implement a read and maybe other actions.
                         return null;
                     }
                 })
                 .build();
+
+        //TODO - example as a setEnabled method.
+
+
     }
 }
