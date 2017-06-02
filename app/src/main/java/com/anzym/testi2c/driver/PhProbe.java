@@ -1,6 +1,5 @@
 package com.anzym.testi2c.driver;
 
-import android.support.v7.widget.LinearLayoutCompat;
 
 import com.google.android.things.pio.I2cDevice;
 import com.google.android.things.pio.PeripheralManagerService;
