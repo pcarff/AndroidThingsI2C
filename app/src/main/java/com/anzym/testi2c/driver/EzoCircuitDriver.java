@@ -1,5 +1,8 @@
 package com.anzym.testi2c.driver;
 
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
+
 import com.google.android.things.userdriver.UserDriverManager;
 import com.google.android.things.userdriver.UserSensor;
 import com.google.android.things.userdriver.UserSensorDriver;
@@ -15,6 +18,7 @@ public class EzoCircuitDriver implements AutoCloseable {
 
     private static final String TAG = EzoCircuitDriver.class.getSimpleName();
     private static final String DRIVER_NAME = "EZO pH Circuit";
+    private static final String PH_SENSOR_TYPE = "pH Sensor" ;
 
     private PhProbe mPhProbe;
     private UserSensor mUserSensor;
@@ -78,17 +82,21 @@ public class EzoCircuitDriver implements AutoCloseable {
     static UserSensor build(final PhProbe phprobe) {
         return new UserSensor.Builder()
                 .setName(DRIVER_NAME)
+                .setCustomType(Sensor.TYPE_DEVICE_PRIVATE_BASE,
+                        PH_SENSOR_TYPE,
+                        Sensor.REPORTING_MODE_CONTINUOUS)
                 .setDriver(new UserSensorDriver() {
                     @Override
                     public UserSensorReading read() throws IOException {
-                        //TODO - implement a read and maybe other actions.
-                        return null;
+                        float[] sample = {phprobe.readSample()};
+                        return new UserSensorReading(
+                            sample,
+                            SensorManager.SENSOR_STATUS_ACCURACY_HIGH); // 120Hz
                     }
                 })
                 .build();
 
         //TODO - example as a setEnabled method.
-
 
     }
 }

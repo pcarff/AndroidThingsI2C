@@ -124,7 +124,7 @@ public class PhProbe  implements AutoCloseable {
         if (cmdBytes[0] == 'c' || cmdBytes[0] == 'r') {
             delay_time = 1800;
         } else {
-            delay_time = 500;
+            delay_time = 800;
         }
         try {
             mDevice.write(cmdBytes, cmdBytes.length);
