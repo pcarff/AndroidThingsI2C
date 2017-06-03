@@ -1,9 +1,13 @@
 package com.anzym.testi2c;
 
+import android.content.Context;
+import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.anzym.testi2c.driver.EzoCircuitDriver;
+import com.anzym.testi2c.driver.PhProbe;
 import com.google.android.things.pio.I2cDevice;
 import com.google.android.things.pio.PeripheralManagerService;
 
@@ -13,8 +17,11 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    PhProbe mPhProbe;
     private static final String I2C_DEVICE_NAME = "I2C1";   // BUS NAME
-    //private static final int I2C_ADDRESS = 0x64;
+
+    /** <TODO> Remove this after suscessful conversion to using driver.
+
     private static final int PH_PROBE_ADDRESS = 99;  //0x63
     private static final int TDS_PROBE_ADDRESS = 100;  //0x64
     private static final int BUFFER_SIZE = 20;
@@ -23,9 +30,9 @@ public class MainActivity extends AppCompatActivity {
 
     // <TODO> Update these to strings and the use getBytes
     //ASCII for i = 105
-    private static final char[] PH_INFO = {105};
+    private static final String PH_INFO = "i";
     //ASCII for r = 114
-    private static final char[] PH_READ = {114};
+    private static final String PH_READ = "r";
 
 
     private I2cDevice pHProbe;
@@ -37,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private byte[] buffer;
     private int code;
     private char[] phData;
+     </TODO>
+     */
+
     private float pH;
 
     @Override
@@ -44,6 +54,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Accessing phProbe directly.
+        try {
+            mPhProbe = new PhProbe(I2C_DEVICE_NAME);
+        } catch (IOException e) {
+            //couldn't configure the device
+        }
+
+        // Read ph value
+
+        try {
+            sample = PhProbe.r
+        }
+
+
+
+        /*
         // Initialize variables.
         cmd = new char[BUFFER_SIZE];
         cmdBytes = new byte[BUFFER_SIZE];
@@ -60,21 +86,23 @@ public class MainActivity extends AppCompatActivity {
             Log.w(TAG, "Unable to access I2C device", e);
         }
 
-        // Send command to get info from device.
-        cmd = PH_INFO;
+
+
+        // convert char[] to byte[]
+        //<TODO> remove the new String after I make these Strings above.
+        //cmdBytes =  PH_READ.getBytes();
+        cmdBytes = PH_INFO.getBytes();
 
         // <TODO> move this for method when executing commands.
-        if (cmd[0] == 'c' || cmd[0] == 'r') {
+        if (cmdBytes[0] == 'c' || cmdBytes[0] == 'r') {
             delay_time = 1800;
         } else {
             delay_time = 300;
         }
 
-        // convert char[] to byte[]
-        //<TODO> remove the new String after I make these Strings above.
-        cmdBytes =  new String(cmd).getBytes();
         try {
             pHProbe.write(cmdBytes, cmdBytes.length);
+            Log.d(TAG,"Wrote: " + new String(cmdBytes));
         } catch (IOException e) {
             Log.d(TAG, "Error writing to device: " + e);
         }
@@ -93,10 +121,10 @@ public class MainActivity extends AppCompatActivity {
             //pHProbe.read(readBytes, BUFFER_SIZE);
 
             // read one byte to get code
-            pHProbe.read(readBytes, 1);
+            pHProbe.read(readBytes, BUFFER_SIZE);
             code = readBytes[0];
-            Log.d(TAG, "Read (code only) results: " + readBytes);
             Log.d(TAG, "code : " + code);
+            Log.d(TAG, "Read results: " + new String(readBytes, "UTF-8"));
         } catch (IOException e) {
             Log.d(TAG, "Error reading data: " + e);
         }
@@ -116,18 +144,10 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
         }
-        //read rest of results back from circuit
-        // (OR)
-        //Do we do the whole read above and massage results
-        try {
-            // read one byte to get code
-            pHProbe.read(readBytes, BUFFER_SIZE);
-            Log.d(TAG, "Read results: " + readBytes);
-        } catch (IOException e) {
-            Log.d(TAG, "Error reading data: " + e);
-        }
 
         //<TODO> Do we need to CLOSE the device??
+
+        */
 
     }
 

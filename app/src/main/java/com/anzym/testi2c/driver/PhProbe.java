@@ -64,6 +64,17 @@ public class PhProbe  implements AutoCloseable {
     }
 
     /**
+     * Read data from pHProbe
+     *
+     */
+    public float readSample() throws IOException, IllegalStateException {
+        if (mDevice == null ) {
+            throw new IllegalStateException("device not connected");
+        }
+        
+    }
+
+    /**
      * Close the driver and the underlying device.
      */
     @Override
