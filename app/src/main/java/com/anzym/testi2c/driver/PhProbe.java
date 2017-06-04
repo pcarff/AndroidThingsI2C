@@ -1,12 +1,15 @@
 package com.anzym.testi2c.driver;
 
 
+import android.support.annotation.IntDef;
 import android.util.Log;
 
 import com.google.android.things.pio.I2cDevice;
 import com.google.android.things.pio.PeripheralManagerService;
 
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -28,10 +31,19 @@ public class PhProbe  implements AutoCloseable {
     private static final int BUFFER_SIZE = 20;
     private static final String READ_PH = "r";
     private static final String GET_INFO = "i";
-
-
+    private static final String SLEEP_MODE = "sleep";
 
     private I2cDevice mDevice;
+
+    /**
+     * Power mode.
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({MODE_STANDBY, MODE_ACTIVE})
+    public @interface Mode {}
+
+    public static final int MODE_STANDBY = 0; // i2c on, output off, low power
+    public static final int MODE_ACTIVE = 1; // i2c on, output on
 
     /**
      * Create a new EZO pH Circuit driver connected to the given I2C bus.
@@ -70,6 +82,29 @@ public class PhProbe  implements AutoCloseable {
         mDevice = device;
         //<TODO> any other settings to do??
 
+    }
+
+    /**
+     * Set current power mode.
+     * @param mode
+     * @throws IOException
+     * @throws IllegalStateException
+     */
+    public void setMode(@Mode int mode) throws IOException, IllegalStateException {
+        if (mDevice == null) {
+            throw new IllegalStateException("device not connected");
+        }
+
+        //<TODO> This is not working the way I want.
+        try {
+            if (mode == PhProbe.MODE_STANDBY) {
+                mDevice.write(SLEEP_MODE.getBytes(), SLEEP_MODE.getBytes().length);
+            } else if (mode == PhProbe.MODE_ACTIVE) {
+                mDevice.write(READ_PH.getBytes(), READ_PH.getBytes().length);
+            }
+        } catch (IOException e) {
+
+        }
     }
 
     /**

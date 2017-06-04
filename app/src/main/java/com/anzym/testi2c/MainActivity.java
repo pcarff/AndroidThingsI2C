@@ -8,11 +8,12 @@ import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 
-import com.anzym.testi2c.driver.EzoCircuitDriver;
+import com.anzym.testi2c.driver.EzoPhCircuitDriver;
 import com.anzym.testi2c.driver.PhProbe;
-import com.google.android.things.pio.I2cDevice;
-import com.google.android.things.pio.PeripheralManagerService;
+import com.google.android.things.contrib.driver.button.Button;
+import com.google.android.things.contrib.driver.button.ButtonInputDriver;
 
 import java.io.IOException;
 
@@ -26,38 +27,28 @@ public class MainActivity extends AppCompatActivity {
 
     SensorEventListener mListener ;
     SensorManager mSensorManager;
-    EzoCircuitDriver mSensorDiver;
+    EzoPhCircuitDriver mSensorDiver;
     private float pH;
+
+    private ButtonInputDriver mButtonInputDriverA;
+    private ButtonInputDriver mButtonInputDriverB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mListener = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-            }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-            }
-        };
-
-        mSensorManager.registerDynamicSensorCallback(new SensorManager.DynamicSensorCallback() {
-            @Override
-            public void onDynamicSensorConnected(Sensor sensor) {
-                mSensorManager.registerListener(mListener, sensor, 2000);
-            }
-        });
+        readyPhProbeSensorDriver();
 
         try {
-            mSensorDiver = new EzoCircuitDriver(I2C_DEVICE_NAME);
-            mSensorDiver.register();
+            mButtonInputDriverA = new ButtonInputDriver("BCM21",
+                    Button.LogicState.PRESSED_WHEN_LOW, KeyEvent.KEYCODE_A);
+            mButtonInputDriverA.register();
+            mButtonInputDriverB = new ButtonInputDriver("BCM20",
+                    Button.LogicState.PRESSED_WHEN_LOW, KeyEvent.KEYCODE_B);
+            mButtonInputDriverB.register();
         } catch (IOException e) {
-
+            throw new RuntimeException("Error initializing GPIO button", e);
         }
 
         /**
@@ -99,5 +90,49 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         */
+    }
+
+    private void readyPhProbeSensorDriver() {
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+            }
+        };
+
+        mSensorManager.registerDynamicSensorCallback(new SensorManager.DynamicSensorCallback() {
+            @Override
+            public void onDynamicSensorConnected(Sensor sensor) {
+                mSensorManager.registerListener(mListener, sensor, 2000);
+            }
+        });
+
+        try {
+            mSensorDiver = new EzoPhCircuitDriver(I2C_DEVICE_NAME);
+            mSensorDiver.register();
+        } catch (IOException e) {
+
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_A) {
+            Log.d(TAG,"Key A pressed.");
+            mSensorDiver.sleep();
+            return true;
+        }
+        if (keyCode == KeyEvent.KEYCODE_B) {
+            Log.d(TAG,"Key B pressed.");
+            mSensorDiver.awake();
+            return true;
+        }
+
+        return super.onKeyUp(keyCode, event);
     }
 }
