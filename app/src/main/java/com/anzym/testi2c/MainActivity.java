@@ -124,12 +124,15 @@ public class MainActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_A) {
             Log.d(TAG,"Key A pressed.");
+            //<TODO> Do I need to unregister and the register below?
             mSensorDiver.sleep();
             return true;
         }
         if (keyCode == KeyEvent.KEYCODE_B) {
             Log.d(TAG,"Key B pressed.");
+
             mSensorDiver.awake();
+            //  readyPhProbeSensorDriver();  // NOT WORKING.
             return true;
         }
 
