@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        readyPhProbeSensorDriver();
+        startPhProbeSensorDriver();
 
         try {
             mButtonInputDriverA = new ButtonInputDriver("BCM21",
@@ -73,8 +73,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mSensorManager.unregisterListener(mListener);
-        mSensorDiver.unregister();
+        stopPhProbeSensorDriver();
         try {
             mSensorDiver.close();
         } catch (IOException e) {
@@ -92,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         */
     }
 
-    private void readyPhProbeSensorDriver() {
+    private void startPhProbeSensorDriver() {
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mListener = new SensorEventListener() {
             @Override
@@ -120,19 +119,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void stopPhProbeSensorDriver() {
+        mSensorManager.unregisterListener(mListener);
+        mSensorDiver.unregister();
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_A) {
             Log.d(TAG,"Key A pressed.");
             //<TODO> Do I need to unregister and the register below?
-            mSensorDiver.sleep();
+            //mSensorDiver.sleep();
+            stopPhProbeSensorDriver();
             return true;
+
         }
         if (keyCode == KeyEvent.KEYCODE_B) {
             Log.d(TAG,"Key B pressed.");
-
-            mSensorDiver.awake();
-            //  readyPhProbeSensorDriver();  // NOT WORKING.
+            startPhProbeSensorDriver();
+            //  startPhProbeSensorDriver();  // NOT WORKING.
             return true;
         }
 
